@@ -4,7 +4,14 @@ const taskSchema = new Schema({
     name: String,
     type: String,
     fechaIni: String,
-    fechaFin: String
+    fechaFin: String,
+    status: Boolean,
+    usuarios: [
+      {
+        ref: "User",
+        type: Schema.Types.ObjectId,
+      },
+    ],
 },{
     timestamps: true,
     versionKey: false

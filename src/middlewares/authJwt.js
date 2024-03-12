@@ -22,12 +22,12 @@ export const verifyToken = async (req, res, next) => {
 }
 
 // Middleware para verificar si el usuario es un moderador
-export const isModerator = async (req, res, next) => {
+export const isLider = async (req, res, next) => {
     try {
         const user = await User.findById(req.userId); // Buscar al usuario en la base de datos
         const roles = await Role.find({ _id: { $in: user.roles } }); // Buscar los roles del usuario
         for (let i = 0; i < roles.length; i++) { // Recorrer los roles del usuario
-            if (roles[i].name === "moderator") { // Si el usuario tiene el rol de moderador, llamar al siguiente middleware
+            if (roles[i].name === "lider") { // Si el usuario tiene el rol de moderador, llamar al siguiente middleware
                 next();
                 return;
             }
@@ -51,24 +51,6 @@ export const isAdmin = async (req, res, next) => {
             }
         }
         return res.status(403).json({ message: "Requiere ser administrador" }); // Enviar un mensaje de error si el usuario no es administrador
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor
-    }
-}
-
-// Middleware para verificar si el usuario es un administrador o un moderador
-export const isAdminOrModerator = async (req, res, next) => {
-    try {
-        const user = await User.findById(req.userId); // Buscar al usuario en la base de datos
-        const roles = await Role.find({ _id: { $in: user.roles } }); // Buscar los roles del usuario
-        for (let i = 0; i < roles.length; i++) { // Recorrer los roles del usuario
-            if (roles[i].name === "admin" || roles[i].name === "moderator") { // Si el usuario tiene el rol de administrador o moderador, llamar al siguiente middleware
-                next();
-                return;
-            }
-        }
-        return res.status(403).json({ message: "Requiere ser administrador o moderador" }); // Enviar un mensaje de error si el usuario no es administrador o moderador
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor
