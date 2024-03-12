@@ -16,7 +16,7 @@ export const createTask = async (req, res) => {
     try {
         const { name, type, fechaIni, fechaFin } = req.body; // Obtener los datos de la nueva tarea desde el cuerpo de la solicitud
         const newTask = new Task({ name, type, fechaIni, fechaFin }); // Crear una nueva instancia de la tarea con los datos proporcionados
-        //const taskSave = await newTask.save(); // Guardar la nueva tarea en la base de datos
+        const taskSave = await newTask.save(); // Guardar la nueva tarea en la base de datos
 
         res.status(201).json({ message: "Tarea guardada" }); // Enviar un mensaje de éxito como respuesta
         //res.status(201).json(taskSave);  // Si se desea enviar la tarea guardada como respuesta
