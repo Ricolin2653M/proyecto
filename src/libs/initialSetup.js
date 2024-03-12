@@ -10,8 +10,8 @@ export const createRoles = async () => {
         if (count > 0) return;
         //Crear roles por defecto envolviendo en una promesa
         const values = await Promise.all([
-            new Role({ name: "user" }).save(),
-            new Role({ name: "moderator"}).save(),
+            new Role({ name: "operator" }).save(),
+            new Role({ name: "lider"}).save(),
             new Role({ name: "admin" }).save()
         ]);
         console.log(values);
