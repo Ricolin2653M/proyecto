@@ -56,7 +56,6 @@ export const isAdmin = async (req, res, next) => {
         return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor
     }
 }
-
 // Middleware para verificar si el usuario es un lider o admin
 export const isLiderOrAdmin = async (req, res, next) => {
     try {
