@@ -11,6 +11,7 @@ router.get('/', taskCtrl.getTask);
 router.post('/',  taskCtrl.createTask);
 router.get('/:taskId', taskCtrl.getTaskById);
 router.put('/:taskId', taskCtrl.updateTaskById);
+//Unicamente el admin elimina
 router.delete('/:taskId', taskCtrl.deleteTaskById);
 
 export default router;

@@ -1,5 +1,6 @@
 import { response } from 'express';
 import Task from '../models/Task';
+import User from '../models/User';
 
 // Función para obtener todas las tareas
 export const getTask = async (req, res) => {
@@ -14,9 +15,27 @@ export const getTask = async (req, res) => {
 // Función para crear una nueva tarea
 export const createTask = async (req, res) => {
     try {
-        const { name, type, fechaIni, fechaFin } = req.body; // Obtener los datos de la nueva tarea desde el cuerpo de la solicitud
-        const newTask = new Task({ name, type, fechaIni, fechaFin }); // Crear una nueva instancia de la tarea con los datos proporcionados
-        const taskSave = await newTask.save(); // Guardar la nueva tarea en la base de datos
+        const { name, dateStart, dateEnd, users } = req.body; // Obtener los datos de la nueva tarea desde el cuerpo de la solicitud
+        const newTask = new Task({ name, dateStart, dateEnd }); // Crear una nueva instancia de la tarea con los datos proporcionados
+
+
+
+        // Condicional para agregar usuarios
+        if (req.body.users) {
+            const foundUser = await User.find({ username: { $in: users } }); // Buscar los roles en la base de datos
+            newTask.users = foundUser.map(user => User._id); // Asignar los roles encontrados al usuario
+        } else {
+            //res.status(500).json({ message: "No se asigno usuario" });
+            /*
+            const User = await User.findOne({ name: "user" }); // Si no se envían roles, asignar el rol de usuario por defecto
+            newUser.User = [role._id];
+            */
+        }
+
+        // Guardar el nuevo usuario en la base de datos
+        const savedTask = await newTask.save();
+        console.log(savedTask);
+
 
         res.status(201).json({ message: "Tarea guardada" }); // Enviar un mensaje de éxito como respuesta
         //res.status(201).json(taskSave);  // Si se desea enviar la tarea guardada como respuesta
@@ -45,11 +64,11 @@ export const getTaskById = async (req, res) => {
 export const updateTaskById = async (req, res) => {
     try {
         const taskId = req.params.taskId; // Obtener el ID de la tarea desde los parámetros de la URL
-        const { name, type, category, imgURL } = req.body; // Obtener los datos actualizados de la tarea desde el cuerpo de la solicitud
+        const { name, dateStart, dateEnd, users } = req.body; // Obtener los datos actualizados de la tarea desde el cuerpo de la solicitud
 
         const updatedTask = await Task.findByIdAndUpdate(
             taskId,
-            { name, type, category, imgURL },
+            { name, dateStart, dateEnd, users },
             { new: true } // Para obtener la tarea actualizada
         );
 

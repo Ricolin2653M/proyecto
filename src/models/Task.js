@@ -2,11 +2,10 @@ import { Schema, model } from 'mongoose'
 
 const taskSchema = new Schema({
     name: String,
-    type: String,
-    fechaIni: String,
-    fechaFin: String,
+    dateStart: String,
+    dateEnd: String,
     status: Boolean,
-    usuarios: [
+    users: [
       {
         ref: "User",
         type: Schema.Types.ObjectId,
