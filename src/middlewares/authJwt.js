@@ -21,18 +21,18 @@ export const verifyToken = async (req, res, next) => {
     }
 }
 
-// Middleware para verificar si el usuario es un moderador
+// Middleware para verificar si el usuario es un lider
 export const isLider = async (req, res, next) => {
     try {
         const user = await User.findById(req.userId); // Buscar al usuario en la base de datos
         const roles = await Role.find({ _id: { $in: user.roles } }); // Buscar los roles del usuario
         for (let i = 0; i < roles.length; i++) { // Recorrer los roles del usuario
-            if (roles[i].name === "lider") { // Si el usuario tiene el rol de moderador, llamar al siguiente middleware
+            if (roles[i].name === "lider") { // Si el usuario tiene el rol de lider, llamar al siguiente middleware
                 next();
                 return;
             }
         }
-        return res.status(403).json({ message: "Requiere ser moderador" }); // Enviar un mensaje de error si el usuario no es moderador
+        return res.status(403).json({ message: "Requiere ser lider" }); // Enviar un mensaje de error si el usuario no es lider
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor
@@ -51,6 +51,24 @@ export const isAdmin = async (req, res, next) => {
             }
         }
         return res.status(403).json({ message: "Requiere ser administrador" }); // Enviar un mensaje de error si el usuario no es administrador
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor
+    }
+}
+
+// Middleware para verificar si el usuario es un lider o admin
+export const isLiderOrAdmin = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId); // Buscar al usuario en la base de datos
+        const roles = await Role.find({ _id: { $in: user.roles } }); // Buscar los roles del usuario
+        for (let i = 0; i < roles.length; i++) { // Recorrer los roles del usuario
+            if (roles[i].name === "lider" || roles[i].name === "admin") { // Si el usuario tiene el rol de lider o admin, llamar al siguiente middleware
+                next();
+                return;
+            }
+        }
+        return res.status(403).json({ message: "Requiere ser lider o admin" }); // Enviar un mensaje de error si el usuario no es lider o admin
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor

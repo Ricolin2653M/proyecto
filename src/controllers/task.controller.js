@@ -23,7 +23,7 @@ export const createTask = async (req, res) => {
         // Condicional para agregar usuarios
         if (req.body.users) {
             const foundUser = await User.find({ username: { $in: users } }); // Buscar los roles en la base de datos
-            newTask.users = foundUser.map(user => User._id); // Asignar los roles encontrados al usuario
+            newTask.users = foundUser.map(user => user._id); // Asignar los roles encontrados al usuario
         } else {
             //res.status(500).json({ message: "No se asigno usuario" });
             /*
