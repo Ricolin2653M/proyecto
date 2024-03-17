@@ -8,11 +8,11 @@ import * as taskCtrl from '../controllers/task.controller';
 
 //Establecer las rutas de las tareas
 router.get('/', taskCtrl.getTask);
-router.post('/',  taskCtrl.createTask);
+router.post('/',  [authJwt.verifyToken,authJwt.isLider ],taskCtrl.createTask);
 //Rutas para el lider y admin
-router.get('/:taskId', taskCtrl.getTaskById);
-router.put('/:taskId', taskCtrl.updateTaskById);
+router.get('/:taskId', [authJwt.verifyToken,authJwt.isLiderOrAdmin ],taskCtrl.getTaskById);
+router.put('/:taskId', [authJwt.verifyToken,authJwt.isLiderOrAdmin ], taskCtrl.updateTaskById);
 //Unicamente el admin elimina
-router.delete('/:taskId', taskCtrl.deleteTaskById);
+router.delete('/:taskId', [authJwt.verifyToken,authJwt.isAdmin ],taskCtrl.deleteTaskById);
 
 export default router;
