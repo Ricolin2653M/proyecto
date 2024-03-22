@@ -5,42 +5,30 @@ import User from '../models/User';
 // Función para obtener todas las tareas
 export const getTask = async (req, res) => {
     try {
-        const task = await Task.find(); // Buscar todas las tareas en la base de datos
-        res.json(task);  // Enviar el array de tareas como respuesta
+        const tasks = await Task.find(); // Buscar todas las tareas en la base de datos
+        res.status(201).json(tasks);  // Enviar el array de tareas como respuesta
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
+        res.status(500).json({ message: "Error al obtener tareas: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }
 }
 
 // Función para crear una nueva tarea
 export const createTask = async (req, res) => {
     try {
-        const { name, dateStart, dateEnd, users } = req.body; // Obtener los datos de la nueva tarea desde el cuerpo de la solicitud
-        const newTask = new Task({ name, dateStart, dateEnd }); // Crear una nueva instancia de la tarea con los datos proporcionados
-
-
+        const { name, dateStart, dateEnd, users, status} = req.body; // Obtener los datos de la nueva tarea desde el cuerpo de la solicitud
+        const newTask = new Task({ name, dateStart, dateEnd, status }); // Crear una nueva instancia de la tarea con los datos proporcionados
 
         // Condicional para agregar usuarios
-        if (req.body.users) {
-            const foundUser = await User.find({ username: { $in: users } }); // Buscar los roles en la base de datos
-            newTask.users = foundUser.map(user => user._id); // Asignar los roles encontrados al usuario
-        } else {
-            //res.status(500).json({ message: "No se asigno usuario" });
-            /*
-            const User = await User.findOne({ name: "user" }); // Si no se envían roles, asignar el rol de usuario por defecto
-            newUser.User = [role._id];
-            */
+        if (users && users.length > 0) {
+            const foundUsers = await User.find({ username: { $in: users } }); // Buscar los usuarios en la base de datos
+            newTask.users = foundUsers.map(user => user._id); // Asignar los usuarios encontrados a la tarea
         }
 
-        // Guardar el nuevo usuario en la base de datos
+        // Guardar la nueva tarea en la base de datos
         const savedTask = await newTask.save();
-        console.log(savedTask);
-
-
         res.status(201).json({ message: "Tarea guardada" }); // Enviar un mensaje de éxito como respuesta
-        //res.status(201).json(taskSave);  // Si se desea enviar la tarea guardada como respuesta
     } catch (error) {
-        res.status(500).json({ message: "Error:\n" + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
+        res.status(500).json({ message: "Error al crear tarea: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }
 }
 
@@ -56,7 +44,7 @@ export const getTaskById = async (req, res) => {
 
         res.json(task); // Enviar la tarea encontrada como respuesta
     } catch (error) {
-        res.status(500).json({ message: "Error:\n" + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
+        res.status(500).json({ message: "Error al obtener tarea por ID: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }
 }
 
@@ -64,7 +52,7 @@ export const getTaskById = async (req, res) => {
 export const updateTaskById = async (req, res) => {
     try {
         const taskId = req.params.taskId; // Obtener el ID de la tarea desde los parámetros de la URL
-        const { name, dateStart, dateEnd, users } = req.body; // Obtener los datos actualizados de la tarea desde el cuerpo de la solicitud
+        const { name, dateStart, dateEnd, users ,status } = req.body; // Obtener los datos actualizados de la tarea desde el cuerpo de la solicitud
 
         const updatedTask = await Task.findByIdAndUpdate(
             taskId,
@@ -76,9 +64,9 @@ export const updateTaskById = async (req, res) => {
             return res.status(404).json({ message: 'Tarea no encontrada' }); // Enviar un mensaje de error si la tarea no se encuentra
         }
 
-        res.status(201).json({ message: "Cambios aplicados a la tarea" }); // Enviar un mensaje de éxito como respuesta
+        res.json({ message: "Tarea actualizada" }); // Enviar un mensaje de éxito como respuesta
     } catch (error) {
-        res.status(500).json({ message: "Error:\n" + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
+        res.status(500).json({ message: "Error al actualizar tarea por ID: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }
 }
 
@@ -87,7 +75,7 @@ export const deleteTaskById = async (req, res) => {
     try {
         const taskId = req.params.taskId; // Obtener el ID de la tarea desde los parámetros de la URL
 
-        const deletedTask = await Product.findByIdAndDelete(taskId); // Eliminar la tarea de la base de datos
+        const deletedTask = await Task.findByIdAndDelete(taskId); // Eliminar la tarea de la base de datos
 
         if (!deletedTask) {
             return res.status(404).json({ message: 'Tarea no encontrada' }); // Enviar un mensaje de error si la tarea no se encuentra
@@ -95,6 +83,6 @@ export const deleteTaskById = async (req, res) => {
 
         res.json({ message: 'Tarea eliminada exitosamente' }); // Enviar un mensaje de éxito como respuesta
     } catch (error) {
-        res.status(500).json({ message: "Error:\n" + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
+        res.status(500).json({ message: "Error al eliminar tarea por ID: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }
 }

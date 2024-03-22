@@ -4,7 +4,7 @@ const taskSchema = new Schema({
     name: String,
     dateStart: String,
     dateEnd: String,
-    status: Boolean,
+    status: String,
     users: [
       {
         ref: "User",
