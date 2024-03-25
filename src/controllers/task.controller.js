@@ -16,7 +16,7 @@ export const getTask = async (req, res) => {
 // Función para crear una nueva tarea
 export const createTask = async (req, res) => {
     try {
-        const statusTask = "Incompleta"; // Estado predeterminado
+        
         const description = "Sin descripción"; // Descripción predeterminada
 
         const { name, dateStart, dateEnd, users, status } = req.body; // Obtener los datos de la nueva tarea desde el cuerpo de la solicitud
@@ -30,11 +30,11 @@ export const createTask = async (req, res) => {
             // Guardar la nueva tarea en la base de datos
             const savedTask = await newTask.save();
 
-            // Crear entradas en TaskUser para cada usuario asociado a la tarea
+            // Crear los registros en TaskUser para cada usuario asociado a la tarea
             const taskUserEntries = foundUsers.map(user => ({
                 taskID: savedTask._id,
                 userID: user._id,
-                statusTask, // Establecer el estado predeterminado
+                status, // Establecer el status dado al crear la tarea
                 description // Establecer la descripción predeterminada
             }));
 
@@ -70,11 +70,11 @@ export const getTaskById = async (req, res) => {
 export const updateTaskById = async (req, res) => {
     try {
         const taskId = req.params.taskId; // Obtener el ID de la tarea desde los parámetros de la URL
-        const { name, dateStart, dateEnd, users, status } = req.body; // Obtener los datos actualizados de la tarea desde el cuerpo de la solicitud
+        const { name, dateStart, dateEnd, status } = req.body; // Obtener los datos actualizados de la tarea desde el cuerpo de la solicitud
 
         const updatedTask = await Task.findByIdAndUpdate(
             taskId,
-            { name, dateStart, dateEnd, users },
+            { name, dateStart, dateEnd, status },
             { new: true } // Para obtener la tarea actualizada
         );
 
@@ -82,7 +82,7 @@ export const updateTaskById = async (req, res) => {
             return res.status(404).json({ message: 'Tarea no encontrada' }); // Enviar un mensaje de error si la tarea no se encuentra
         }
 
-        res.json({ message: "Tarea actualizada" }); // Enviar un mensaje de éxito como respuesta
+        res.status(200).json({ message: "Tarea actualizada" }); // Enviar un mensaje de éxito como respuesta
     } catch (error) {
         res.status(500).json({ message: "Error al actualizar tarea por ID: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }
