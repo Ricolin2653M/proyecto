@@ -65,6 +65,7 @@ export const updateTaskUserById = async (req, res) => {
 
 // Función para eliminar una tarea por su ID
 /*
+
 export const deleteTaskById = async (req, res) => {
     try {
         const taskId = req.params.taskId; // Obtener el ID de la tarea desde los parámetros de la URL
