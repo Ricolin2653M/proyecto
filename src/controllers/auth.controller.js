@@ -8,6 +8,12 @@ export const signUp = async (req, res) => {
   try {
     const { username, email, password, roles } = req.body;
 
+    //Valida si existe el correo
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "El correo electrónico ya está en uso" });
+    }
+
     // Crear un nuevo usuario con los datos proporcionados
     const newUser = new User({
       username,

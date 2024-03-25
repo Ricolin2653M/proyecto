@@ -1,36 +1,53 @@
-import { response } from 'express';
 import TaskUser from '../models/TaskUser';
-import User from '../models/User';
-
-//Obtener tareas disponibles del usuario
-export const getTaskUser = async (req, res) => {
-    try {
-        //Aquí va la función
-       res.status(201).json({message: "Si"});
-    } catch (error) {
-        res.status(500).json({message: "Error"});
-        //res.status(500).json({ message: "Error al obtener tareas: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
-    }
-}
 
 // Función para obtener tareas del usuario por status
 export const getTaskUserByStatus = async (req, res) => {
     try {
-        //Aquí va la función
-       res.status(201).json({message: "Si"});
+        const userID = req.params.userID;
+        const status = req.params.status;
+
+        // Buscar las tareas del usuario por su ID y estado
+        const tasks = await TaskUser.find({ userID: userID, statusTask: status });
+
+        // Responder con las tareas encontradas
+        res.status(200).json(tasks);
     } catch (error) {
-        res.status(500).json({message: "Error"});
-        //res.status(500).json({ message: "Error al obtener tareas: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
+        // Manejar errores
+        console.error("Error al obtener tareas:", error);
+        res.status(500).json({ message: "Error al obtener tareas: " + error.message });
     }
 }
+//FUNCION OBETNER TAREAS POR USUARIO
+export const getTasksByUserId = async (req, res) => {
+    try {
+        const { userID } = req.params; // Obtener el ID 
 
-// Función para actualizar una tarea por su ID
+        // Verificar ID 
+        if (!userID) {
+            throw new Error("Debe proporcionar un ID de usuario válido.");
+        }
+
+        // Buscar las entradas en TaskUser 
+        const userTasks = await TaskUser.find({ userID: userId })
+            .populate('taskID') // Poblar los datos de la tarea asociada
+            .populate('userID'); // Poblar los datos del usuario asociado
+
+        // Verificar 
+        if (!userTasks || userTasks.length === 0) {
+            return res.status(404).json({ message: "No se encontraron tareas para el usuario especificado." });
+        }
+
+        res.status(200).json(userTasks);
+    } catch (error) {
+        res.status(500).json({ message: "Error al obtener tareas: " + error.message });
+    }
+}//Obtener tareas disponibles del usuario
 export const updateTaskUserById = async (req, res) => {
     try {
         //Aquí va la función
-       res.status(201).json({message: "Si"});
+        res.status(201).json({ message: "Si" });
     } catch (error) {
-        res.status(500).json({message: "Error"});
+        res.status(500).json({ message: "Error" });
         //res.status(500).json({ message: "Error al obtener tareas: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }
 }
