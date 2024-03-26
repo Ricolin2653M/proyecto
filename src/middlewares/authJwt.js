@@ -57,12 +57,12 @@ export const isAdmin = async (req, res, next) => {
     }
 }
 // Middleware para verificar si el usuario es un usuario o admin
-export const isUserOrAdmin = async (req, res, next) => {
+export const isOperatorOrAdmin = async (req, res, next) => {
     try {
         const user = await User.findById(req.userId); // Buscar al usuario en la base de datos
         const roles = await Role.find({ _id: { $in: user.roles } }); // Buscar los roles del usuario
         for (let i = 0; i < roles.length; i++) { // Recorrer los roles del usuario
-            if (roles[i].name === "user" || roles[i].name === "admin") { // Si el usuario tiene el rol de lider o admin, llamar al siguiente middleware
+            if (roles[i].name === "operator" || roles[i].name === "admin") { // Si el usuario tiene el rol de lider o admin, llamar al siguiente middleware
                 next();
                 return;
             }
