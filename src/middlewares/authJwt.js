@@ -56,7 +56,24 @@ export const isAdmin = async (req, res, next) => {
         return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor
     }
 }
-// Middleware para verificar si el usuario es un lider o admin
+// Middleware para verificar si el usuario es un usuario o admin
+export const isUserOrAdmin = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId); // Buscar al usuario en la base de datos
+        const roles = await Role.find({ _id: { $in: user.roles } }); // Buscar los roles del usuario
+        for (let i = 0; i < roles.length; i++) { // Recorrer los roles del usuario
+            if (roles[i].name === "user" || roles[i].name === "admin") { // Si el usuario tiene el rol de lider o admin, llamar al siguiente middleware
+                next();
+                return;
+            }
+        }
+        return res.status(403).json({ message: "Requiere ser lider o admin" }); // Enviar un mensaje de error si el usuario no es lider o admin
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor
+    }
+    
+}
 export const isLiderOrAdmin = async (req, res, next) => {
     try {
         const user = await User.findById(req.userId); // Buscar al usuario en la base de datos
@@ -72,4 +89,5 @@ export const isLiderOrAdmin = async (req, res, next) => {
         console.error(error);
         return res.status(500).json({ message: "Error interno del servidor" }); // Enviar un mensaje de error si ocurre un error interno del servidor
     }
+    
 }
