@@ -7,7 +7,7 @@ import TaskUser from '../models/TaskUser';
 export const getTask = async (req, res) => {
     try {
         const tasks = await Task.find(); // Buscar todas las tareas en la base de datos
-        res.status(201).json(tasks);  // Enviar el array de tareas como respuesta
+        res.status(200).json(tasks);  // Enviar el array de tareas como respuesta
     } catch (error) {
         res.status(500).json({ message: "Error al obtener tareas: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }
@@ -60,7 +60,7 @@ export const getTaskById = async (req, res) => {
             return res.status(404).json({ message: 'Tarea no encontrada' }); // Enviar un mensaje de error si la tarea no se encuentra
         }
 
-        res.json(task); // Enviar la tarea encontrada como respuesta
+        res.status(200).json(task); // Enviar la tarea encontrada como respuesta
     } catch (error) {
         res.status(500).json({ message: "Error al obtener tarea por ID: " + error.message }); // Enviar un mensaje de error si ocurre algún problema en el servidor
     }

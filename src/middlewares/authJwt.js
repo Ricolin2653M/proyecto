@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 import Role from "../models/Role";
+import Token from "../utils/token";
 
 // Middleware para verificar si el token es válido
 export const verifyToken = async (req, res, next) => {
@@ -9,10 +10,18 @@ export const verifyToken = async (req, res, next) => {
         if (!token) return res.status(403).json({ message: "No se ha proporcionado ningún Token" }); // Enviar un mensaje de error si no se proporciona ningún token
 
         const decoded = jwt.verify(token, process.env.SECRET); // Verificar el token utilizando la clave secreta
+        
         req.userId = decoded.id; // Establecer el ID del usuario decodificado en el objeto de solicitud
         const user = await User.findById(req.userId, { password: 0 }); // Buscar al usuario en la base de datos y excluir la contraseña de la respuesta
 
         if (!user) return res.status(404).json({ message: "Usuario no encontrado" }); // Enviar un mensaje de error si el usuario no se encuentra
+
+        // Validar la expiración del token
+        try {
+            Token.validateExpiration(decoded); // Llamar a la función validateExpiration para verificar la expiración del token
+        } catch (error) {
+            return res.status(401).json({ message: error.message }); // Enviar un mensaje de error si el token ha expirado
+        }
 
         next(); // Llamar al siguiente middleware si el token es válido y el usuario existe
     } catch (error) {

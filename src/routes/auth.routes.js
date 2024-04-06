@@ -4,8 +4,8 @@ const router = Router();
 
 import * as authCtrl from "../controllers/auth.controller";
 
-router.post('/signup', authCtrl.signUp)
+router.post('/signup',[authJwt.verifyToken, authJwt.isLider], authCtrl.signUp)
 
-router.post('/signin',[authJwt.verifyToken, authJwt.isLider], authCtrl.SignIn)
+router.post('/signin', authCtrl.SignIn)
 
 export default router;

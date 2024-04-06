@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 const SECRET = process.env.SECRET;
 
 //Crear constante de expiración
-const EXPIRATION_TIME = 60 * 1000;
+const EXPIRATION_TIME = (60 * 1000) * 20;
 
 //Crear función para generar token
 export const signToken = (user) => {
@@ -20,12 +20,12 @@ export const signToken = (user) => {
         exp: Date.now() + EXPIRATION_TIME
     }
     return jwt.sign(payload, SECRET);
-} 
+}
 
 //Crear función para verificar token
 export const verifyToken = (token) => {
     return jwt.verify(token, SECRET);
-} 
+}
 
 //Función que verifica la expiración del token
 export const validateExpiration = (payload) => {
