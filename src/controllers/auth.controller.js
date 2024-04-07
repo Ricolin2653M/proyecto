@@ -9,9 +9,15 @@ export const signUp = async (req, res) => {
     const { username, email, password, roles } = req.body;
 
     //Valida si existe el correo
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
       return res.status(400).json({ error: "El correo electrónico ya está en uso" });
+    }
+
+    //Valida si existe el nombre de usuario
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ error: "El nombre de usuario ya está en uso" });
     }
 
     // Crear un nuevo usuario con los datos proporcionados
@@ -26,17 +32,17 @@ export const signUp = async (req, res) => {
       const foundRoles = await Role.find({ name: { $in: roles } }); // Buscar los roles en la base de datos
       newUser.roles = foundRoles.map(role => role._id); // Asignar los roles encontrados al usuario
     } else {
-      const role = await Role.findOne({ name: "user" }); // Si no se envían roles, asignar el rol de usuario por defecto
+      const role = await Role.findOne({ name: "operator" }); // Si no se envían roles, asignar el rol de usuario por defecto
       newUser.roles = [role._id];
     }
 
     // Guardar el nuevo usuario en la base de datos
     const savedUser = await newUser.save();
-    console.log(savedUser);
+    //console.log(savedUser);
     res.status(200).json("Usuario registrado exitosamente");
   } catch (error) {
     // Enviar un mensaje de error si ocurre algún problema durante el registro
-    console.error("Error al registrar usuario:", error);
+    //console.error("Error al registrar usuario:", error);
     res.status(500).json({ error: "Error al registrar usuario" });
   }
 };
@@ -60,7 +66,7 @@ export const SignIn = async (req, res) => {
     });
 
     // Responder con el token generado
-    res.status(200).json({ token });
+    res.status(200).json({ message: "Sesión iniciada con éxito ",token });
   } catch (error) {
     // Enviar un mensaje de error si ocurre algún problema durante la autenticación
     res.status(500).json({ error: "Error al iniciar sesión" });

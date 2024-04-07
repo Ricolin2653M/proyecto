@@ -1,7 +1,6 @@
 import Task from '../models/Task';
 import User from '../models/User';
 import TaskUser from '../models/TaskUser';
-import mongoose from 'mongoose';
 
 // Función para obtener todas las tareas
 export const getTask = async (req, res) => {
@@ -16,11 +15,19 @@ export const getTask = async (req, res) => {
 // Función para crear una nueva tarea
 export const createTask = async (req, res) => {
     try {
-
         const description = "Sin descripción"; // Descripción predeterminada
 
         const { name, dateStart, dateEnd, users, status } = req.body; // Obtener los datos de la nueva tarea 
-        const newTask = new Task({ name, dateStart, dateEnd, status }); // Crear una nueva instancia de la tarea con los datos proporcionados
+
+        let status2; //Variable para status
+
+        if (status) {
+            status2 = status; // Si status tiene un valor, asigna ese valor a status2
+        } else {
+            status2 = "Incompleta"; // Si status está vacío, asigna "Incompleta" a status2
+        }
+
+        const newTask = new Task({ name, dateStart, dateEnd, status: status2 }); // Crear una nueva instancia de la tarea con los datos proporcionados
 
         // Condicional para agregar usuarios
         if (users && users.length > 0) {
@@ -34,7 +41,7 @@ export const createTask = async (req, res) => {
             const taskUserEntries = foundUsers.map(user => ({
                 taskID: savedTask._id,
                 userID: user._id,
-                status, // Establecer el status dado al crear la tarea
+                statusTask: status2, // Establecer el status dado al crear la tarea o le asigna uno en caso de estar vacío
                 description // Establecer la descripción predeterminada
             }));
 
@@ -68,13 +75,20 @@ export const getTaskById = async (req, res) => {
 // Función para actualizar una tarea por su ID
 export const updateTaskById = async (req, res) => {
     try {
-
-        const description = "Sin descripción"; 
-
         const taskId = req.params.taskId; // Obtener el ID de la tarea desde los parámetros de la URL
         let { name, dateStart, dateEnd, status, users } = req.body; // Obtener los datos actualizados de la tarea desde el cuerpo de la solicitud
 
-        // Obtener los a IDs de usuario por nombre(username)
+        //Variables para status
+        let status2;
+
+        if (status) {
+            status2 = status; // Si status tiene un valor, asigna ese valor a status2
+        } else {
+            status2 = "Incompleta"; // Si status está vacío, asigna "Incompleta" a status2
+        }
+
+
+        // Obtener los IDs de usuario por nombre(username)
         if (users && users.length > 0) {
             const foundUsers = await User.find({ username: { $in: users } }); // Buscar los usuarios en la base de datos
 
@@ -85,29 +99,37 @@ export const updateTaskById = async (req, res) => {
         // Actualizar la tarea en la colección Task
         const updatedTask = await Task.findByIdAndUpdate(
             taskId,
-            { name, dateStart, dateEnd, status, users },
+            { name, dateStart, dateEnd, status: status2, users },
             { new: true } // Para obtener la tarea actualizada
-        ).populate('users');
+        );
 
         if (!updatedTask) {
             return res.status(404).json({ message: 'Tarea no encontrada' }); // Enviar un mensaje de error si la tarea no se encuentra
         }
 
-        // Actualizar los usuarios asociados en la colección TaskUser
-        if (users && users.length > 0) {
-            // Eliminar las entradas antiguas de TaskUser asociadas a esta tarea
-            await TaskUser.deleteMany({ taskID: taskId });
+        // Obtener los usuarios asociados a la tarea en TaskUser
+        const taskUsers = await TaskUser.find({ taskID: taskId });
+        const taskUserIDs = taskUsers.map(taskUser => taskUser.userID.toString());
 
-            // Crear las nuevas entradas de TaskUser para los usuarios actualizados
-            const taskUserEntries = users.map(userId => ({
+        // Determinar qué usuarios deben ser agregados o eliminados en TaskUser
+        const usersToAdd = users.filter(userId => !taskUserIDs.includes(userId));
+        const usersToRemove = taskUserIDs.filter(userId => !users.includes(userId));
+
+        // Agregar nuevos usuarios en TaskUser
+        if (usersToAdd.length > 0) {
+            const taskUserEntriesToAdd = usersToAdd.map(userId => ({
                 taskID: taskId,
                 userID: userId,
-                status, // Establecer el status dado al crear la tarea
-                description
+                statusTask: status2,
+                description: "Sin descripción"
             }));
 
-            // Insertar todas las entradas actualizadas en TaskUser
-            await TaskUser.insertMany(taskUserEntries);
+            await TaskUser.insertMany(taskUserEntriesToAdd);
+        }
+
+        // Eliminar usuarios en TaskUser
+        if (usersToRemove.length > 0) {
+            await TaskUser.deleteMany({ taskID: taskId, userID: { $in: usersToRemove } });
         }
 
         res.status(200).json({ message: "Tarea y usuarios asociados actualizados correctamente" }); // Enviar un mensaje de éxito como respuesta junto con la tarea actualizada
