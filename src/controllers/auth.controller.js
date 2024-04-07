@@ -56,16 +56,13 @@ export const SignIn = async (req, res) => {
 
     // Generar un token de autenticación para el usuario encontrado
     const token = jwt.sign({ id: userFound._id }, process.env.SECRET, {
-      expiresIn: 2000 // Definir la expiración del token (ejemplo de 2000 segundos)
+      expiresIn: 1200 // Definir la expiración del token (20 minutos)
     });
 
-    // Mostrar el usuario encontrado en la consola (para propósitos de prueba)
-    console.log(userFound);
     // Responder con el token generado
     res.status(200).json({ token });
   } catch (error) {
     // Enviar un mensaje de error si ocurre algún problema durante la autenticación
-    console.error("Error al iniciar sesión:", error);
     res.status(500).json({ error: "Error al iniciar sesión" });
   }
 };

@@ -16,13 +16,6 @@ export const verifyToken = async (req, res, next) => {
 
         if (!user) return res.status(404).json({ message: "Usuario no encontrado" }); // Enviar un mensaje de error si el usuario no se encuentra
 
-        // Validar la expiración del token
-        try {
-            Token.validateExpiration(decoded); // Llamar a la función validateExpiration para verificar la expiración del token
-        } catch (error) {
-            return res.status(401).json({ message: error.message }); // Enviar un mensaje de error si el token ha expirado
-        }
-
         next(); // Llamar al siguiente middleware si el token es válido y el usuario existe
     } catch (error) {
         console.error(error);

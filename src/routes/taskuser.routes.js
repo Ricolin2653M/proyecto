@@ -7,9 +7,14 @@ const router = Router();
 import * as taskUserCtrl from '../controllers/taskuser.controller';
 
 
-router.get('/user/:userID', taskUserCtrl.getTasksByUserId); //Obtener tareas de usuario
-router.get('/:userID/:status', taskUserCtrl.getTaskUserByStatus); //Obtener tareas del usuario por status
 
-router.put('/:TaskUserID', [authJwt.verifyToken, authJwt.isOperatorOrAdmin], taskUserCtrl.updateTaskUserById); //Actualizar el estado y descripción de la tarea asignada al usuario
+//Obtener tareas de usuario
+router.get('/user/:userID', taskUserCtrl.getTasksByUserId);
 
-export default router;
+//Obtener tareas del usuario por status
+router.get('/:userID/:status', taskUserCtrl.getTaskUserByStatus); 
+
+//Actualizar el estado y descripción de la tarea asignada al usuario
+router.put('/:TaskUserID', [authJwt.verifyToken, authJwt.isOperatorOrAdmin], taskUserCtrl.updateTaskUserById); 
+
+export default router; 
