@@ -3,6 +3,10 @@ import authRoutes from "../src/routes/auth.routes";
 import createRoles from "./libs/initialSetup";
 import taskRoutes from "../src/routes/task.routes";
 import taskUserRoutes from "../src/routes/taskuser.routes";
+
+//CORS, se usa para evitar errores en las peticiones de servidores,de manera que admite o deniega sengun el caso
+import cors from "cors";
+
 const app = express();
 //Ejecutar la función para crear roles por defecto
 createRoles();
@@ -10,6 +14,7 @@ createRoles();
 //export default app;
 app.use(express.json());
 
+app.use(cors());
 
 
 app.get("/", (req, res) => {

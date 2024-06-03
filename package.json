@@ -9,7 +9,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js --exec babel-node"
   },
-  "author": "aura",
+  "author": "X",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

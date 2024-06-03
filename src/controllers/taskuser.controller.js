@@ -41,7 +41,8 @@ export const getTasksByUserId = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Error al obtener tareas: " + error.message });
     }
-}//Obtener tareas disponibles del usuario
+}
+//editar tareas disponibles del usuario
 export const updateTaskUserById = async (req, res) => {
     try {
         const TaskUserID = req.params.TaskUserID; // Obtener el ID de la tarea desde los parámetros de la URL
