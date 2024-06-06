@@ -38,7 +38,9 @@ export const updateUserById = async (req, res) => {
         }
 
         if (roles) {
-            updateData.roles = roles;
+            // Convertir roles a ObjectId
+            const rolesFound = await Role.find({ name: { $in: roles } });
+            updateData.roles = rolesFound.map(role => role._id);
         }
 
         const updatedUser = await User.findByIdAndUpdate(
