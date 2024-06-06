@@ -21,12 +21,29 @@ export const getUserById = async (req, res) => {
 export const updateUserById = async (req, res) => {
     try {
         const userID = req.params.userID;
-        console.log("UserID:", userID);
-        const { username, email } = req.body;
+        const { username, email, password, roles } = req.body;
+
+        const updateData = {};
+
+        if (username) {
+            updateData.username = username;
+        }
+
+        if (email) {
+            updateData.email = email;
+        }
+
+        if (password) {
+            updateData.password = await User.encryptPassword(password);
+        }
+
+        if (roles) {
+            updateData.roles = roles;
+        }
 
         const updatedUser = await User.findByIdAndUpdate(
             userID,
-            { username, email },
+            updateData,
             { new: true }
         );
 
@@ -36,7 +53,6 @@ export const updateUserById = async (req, res) => {
 
         res.status(200).json({ message: "Usuario actualizado", user: updatedUser });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Error al actualizar", error: error.message });
     }
 };
