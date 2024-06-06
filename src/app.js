@@ -3,6 +3,7 @@ import authRoutes from "../src/routes/auth.routes";
 import createRoles from "./libs/initialSetup";
 import taskRoutes from "../src/routes/task.routes";
 import taskUserRoutes from "../src/routes/taskuser.routes";
+import userRoutes from "../src/routes/user.routes"
 
 //CORS, se usa para evitar errores en las peticiones de servidores,de manera que admite o deniega sengun el caso
 import cors from "cors";
@@ -26,5 +27,8 @@ app.use("/api/task",taskRoutes);
 app.use("/api/auth", authRoutes);
 //Rutas para las tareas de los usuarios
 app.use("/api/taskuser", taskUserRoutes);
+
+//Rutas para usuarios
+app.use("/api/user", userRoutes);
 
 export default app;
