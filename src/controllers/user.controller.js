@@ -1,4 +1,5 @@
 import User from "../models/User";
+import Role from "../models/Role";
 
 // Obtener usuario por ID
 export const getUserById = async (req, res) => {
