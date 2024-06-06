@@ -20,8 +20,6 @@ export const getUserById = async (req, res) => {
 // Editar usuario por ID
 export const updateUserById = async (req, res) => {
     try {
-
-        
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
             req.body,

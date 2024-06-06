@@ -4,4 +4,6 @@ import * as userCtrl from '../controllers/user.controller';
 const router = Router();
 
 router.get('/:userID', userCtrl.getUserById);
-router.put('/:')
+router.put('/:');
+
+export default router;
